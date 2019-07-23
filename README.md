@@ -1,5 +1,7 @@
-# Powershell for Work
-## Notes
+# for Work
+## Reg
+-\HKEY_USERS\S-1-5-19\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2 // Use to find mapped/mounted drives on PC
+## powershell
 - -cn HOSTNAME  // To run on remote device
 - enter-pssession // To enter powershell session on remote device
 - Get-WmiObject win32_computersystem // To pull system info
