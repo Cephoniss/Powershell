@@ -6,7 +6,7 @@
 -- Password
 -- AutoAdminLogon
 -- ForceAutoLogon
-## powershell
+## Powershell
 - -cn HOSTNAME  // To run on remote device
 - enter-pssession // To enter powershell session on remote device
 - Get-WmiObject win32_computersystem // To pull system info
