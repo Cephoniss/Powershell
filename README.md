@@ -1,6 +1,11 @@
 # for Work
 ## Reg
--\HKEY_USERS\S-1-5-19\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2 // Use to find mapped/mounted drives on PC
+- \HKEY_USERS\S-1-5-19\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2 // Use to find mapped/mounted drives on PC
+- HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon // Used to edit/create log in accounts (auto login user)
+-- UserName
+-- Password
+-- AutoAdminLogon
+-- ForceAutoLogon
 ## powershell
 - -cn HOSTNAME  // To run on remote device
 - enter-pssession // To enter powershell session on remote device
