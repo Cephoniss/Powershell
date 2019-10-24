@@ -15,3 +15,4 @@
 - Get-wmiobject win32_diskdrive // To pull Drive info
 - Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' |format-list  ReleaseId // To get windows version can also use winver
 - manage-bde –status // To get Encryption status
+- get-process
