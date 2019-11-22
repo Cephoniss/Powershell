@@ -1,5 +1,6 @@
 # For Work
 ## Reg
+- \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
 - \HKEY_USERS\S-1-5-19\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2 // Use to find mapped/mounted drives on PC
 - HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon // Use to edit/create log in accounts (auto login user)
 -- UserName
