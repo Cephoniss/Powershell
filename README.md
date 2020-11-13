@@ -7,7 +7,7 @@
 -- Password
 -- AutoAdminLogon
 -- ForceAutoLogon
---HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations
+- HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations
 In WinStations registry key, create a DWORD (32-bit) value IgnoreClientDesktopScaleFactor 
 ## Powershell
 - invoke-command -cn HOSTNAME -scriptblock {quser} // To see logged on users
