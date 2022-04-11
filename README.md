@@ -9,6 +9,7 @@
 -- ForceAutoLogon
 - HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations
 In WinStations registry key, create a DWORD (32-bit) value IgnoreClientDesktopScaleFactor 
+- \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\ProfileList
 ## Powershell
 - invoke-command -cn HOSTNAME -scriptblock {quser} // To see logged on users
 - invoke-Command -ScriptBlock { logoff # } // To log out user
