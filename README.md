@@ -25,4 +25,5 @@ In WinStations registry key, create a DWORD (32-bit) value IgnoreClientDesktopSc
 - get-process
 - get-aduser
 - get-adcomputer
-- Net Localgroup Administrators UserName /add
+- net user username password /add /expires:never
+- net localgroup Administrators UserName /add
