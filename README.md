@@ -27,3 +27,13 @@ In WinStations registry key, create a DWORD (32-bit) value IgnoreClientDesktopSc
 - get-adcomputer
 - net user username password /add /expires:never
 - net localgroup Administrators UserName /add
+
+## Map Network Share Batch File
+
+```
+@echo Create new $LETTER: drive mapping
+@net use P: \\$PATH /persistent:yes
+taskkill /F /IM explorer.exe & start explorer
+:exit
+@pause
+,,,
