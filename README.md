@@ -61,7 +61,7 @@ get-process
 ```
 - get-aduser
 - get-adcomputer
-- net user username password /add /expires:never
+- net user $username $password /add /expires:never
 - net localgroup Administrators UserName /add
 
 ## Map Network Share Batch File
