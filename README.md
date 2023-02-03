@@ -36,4 +36,4 @@ In WinStations registry key, create a DWORD (32-bit) value IgnoreClientDesktopSc
 taskkill /F /IM explorer.exe & start explorer
 :exit
 @pause
-,,,
+```
