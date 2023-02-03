@@ -19,7 +19,7 @@ To log out user
 ```
 invoke-Command -ScriptBlock { logoff # } 
 ```
-// To run on remote device
+To run on remote device
 ```
 -cn HOSTNAME  
 ```
