@@ -1,15 +1,6 @@
 # For Work
-## Reg
-- \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-- \HKEY_USERS\S-1-5-19\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2 // Use to find mapped/mounted drives on PC
-- HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon // Use to edit/create log in accounts (auto login user)
--- UserName
--- Password
--- AutoAdminLogon
--- ForceAutoLogon
-- HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations
-In WinStations registry key, create a DWORD (32-bit) value IgnoreClientDesktopScaleFactor 
-- \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\ProfileList
+##
+SysInfo script in repo will refrence  some of the power shell commands below:
 ## Powershell
 To see logged on users
 ```
@@ -73,3 +64,14 @@ taskkill /F /IM explorer.exe & start explorer
 :exit
 @pause
 ```
+## Reg
+- \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+- \HKEY_USERS\S-1-5-19\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2 // Use to find mapped/mounted drives on PC
+- HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon // Use to edit/create log in accounts (auto login user)
+-- UserName
+-- Password
+-- AutoAdminLogon
+-- ForceAutoLogon
+- HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations
+In WinStations registry key, create a DWORD (32-bit) value IgnoreClientDesktopScaleFactor 
+- \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\ProfileList
