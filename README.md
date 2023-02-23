@@ -64,6 +64,24 @@ taskkill /F /IM explorer.exe & start explorer
 :exit
 @pause
 ```
+
+## Delete Chrome Bookmarks Batch File
+```
+@echo off
+if exist "%LocalAppData%\Google\Chrome\User Data\Default\Bookmarks" (
+  ren "%LocalAppData%\Google\Chrome\User Data\Default\Bookmarks" "Bookmarks.old"
+  echo Bookmarks renamed successfully.
+) else (
+  echo Bookmarks file not found.
+)
+if exist "%LocalAppData%\Google\Chrome\User Data\Default\Bookmarks.bak" (
+  ren "%LocalAppData%\Google\Chrome\User Data\Default\Bookmarks.bak" "Bookmarks.bak.old"
+  echo Bookmarks.bak renamed successfully.
+) else (
+  echo Bookmarks.bak file not found.
+)
+pause
+```
 ## Reg
 - \HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
 - \HKEY_USERS\S-1-5-19\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2 // Use to find mapped/mounted drives on PC
