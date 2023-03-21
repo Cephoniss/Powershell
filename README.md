@@ -55,6 +55,18 @@ get-process
 - net user $username $password /add /expires:never
 - net localgroup Administrators UserName /add
 
+## Sciprt for checking if hostnames in CSV file are online
+```
+$hostnames = Import-Csv -Path "C:\temp\host.csv" | Select-Object -ExpandProperty Hostname
+
+foreach ($hostname in $hostnames) {
+    if (Test-Connection -ComputerName $hostname -Count 1 -Quiet) {
+        Write-Output "$hostname is online"
+    } else {
+        Write-Output "$hostname is offline"
+    }
+}
+```
 ## Map Network Share Batch File
 
 ```
