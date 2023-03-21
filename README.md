@@ -55,6 +55,11 @@ get-process
 - net user $username $password /add /expires:never
 - net localgroup Administrators UserName /add
 
+Check AD for computer with name
+```
+Get-ADComputer -Filter {Name -like "Bellevuecd*"} | Sort-Object Name | Select-Object Name
+```
+
 ## Sciprt for checking if hostnames in CSV file are online
 ```
 $hostnames = Import-Csv -Path "C:\temp\host.csv" | Select-Object -ExpandProperty Hostname
