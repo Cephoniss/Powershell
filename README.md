@@ -66,7 +66,8 @@ $hostnames = Import-Csv -Path "C:\temp\host.csv" | Select-Object -ExpandProperty
 
 foreach ($hostname in $hostnames) {
     if (Test-Connection -ComputerName $hostname -Count 1 -Quiet) {
-        Write-Output "$hostname is online"
+        $ip = (Resolve-DnsName -Name $hostname -ErrorAction SilentlyContinue).IPAddress
+        Write-Output "$hostname is online at IP address $ip"
     } else {
         Write-Output "$hostname is offline"
     }
