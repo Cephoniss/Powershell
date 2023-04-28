@@ -10,6 +10,10 @@ To log out user
 ```
 invoke-Command -ScriptBlock { logoff # } 
 ```
+Get Printer info from print server
+```
+Get-Printer -ComputerName "printserver" -Name "name*"
+```
 To run on remote device
 ```
 -cn HOSTNAME  
