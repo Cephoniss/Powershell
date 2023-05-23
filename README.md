@@ -63,6 +63,10 @@ Check AD for computer with name
 ```
 Get-ADComputer -Filter {Name -like "Bellevuecd*"} | Sort-Object Name | Select-Object Name
 ```
+Check AD group membership of user
+```
+(Get-ADUser -Identity "name" -Properties MemberOf).MemberOf | Get-ADGroup | Where-Object { $_.Name -like "shar*" } | Select-Object -ExpandProperty Name
+```
 
 ## Sciprt for checking if hostnames in CSV file are online
 ```
