@@ -54,10 +54,18 @@ To get running processes
 ```
 get-process
 ```
-- get-aduser
-- get-adcomputer
-- net user $username $password /add /expires:never
-- net localgroup Administrators UserName /add
+```
+get-aduser
+```
+```
+get-adcomputer
+```
+```
+net user $username $password /add /expires:never
+```
+```
+net localgroup Administrators UserName /add
+```
 
 Check AD for computer with name
 ```
