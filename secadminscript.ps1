@@ -134,5 +134,87 @@ $TabControl.TabPages.Add($ADTab)
 # Add the tab control to the form
 $Form.Controls.Add($TabControl)
 
+
+# Create "Computers" tab
+$ComputersTab = New-Object System.Windows.Forms.TabPage
+$ComputersTab.Text = "Computers"
+
+# Create label for computer search box
+$ComputerLabel = New-Object System.Windows.Forms.Label
+$ComputerLabel.Text = "Computer Name:"
+$ComputerLabel.Location = New-Object System.Drawing.Point(10, 10)
+$ComputerLabel.AutoSize = $true
+
+# Create text box for computer search input
+$ComputerTextBox = New-Object System.Windows.Forms.TextBox
+$ComputerTextBox.Location = New-Object System.Drawing.Point(120, 10)
+$ComputerTextBox.Size = New-Object System.Drawing.Size(200, 20)
+
+# Create button for executing the computer search
+$ComputerSearchButton = New-Object System.Windows.Forms.Button
+$ComputerSearchButton.Text = "Search"
+$ComputerSearchButton.Location = New-Object System.Drawing.Point(340, 5)
+$ComputerSearchButton.Add_Click({
+    $ComputerName = $ComputerTextBox.Text
+
+    # Clear the text box before displaying the result
+    $ComputerResultTextBox.Clear()
+
+    if ($ComputerName) {
+        try {
+            $systemInfo = Get-WmiObject Win32_ComputerSystem -ComputerName $ComputerName
+            $biosInfo = Get-WmiObject Win32_BIOS -ComputerName $ComputerName
+            $memoryInfo = Get-WmiObject Win32_PhysicalMemory -ComputerName $ComputerName
+            $diskDriveInfo = Get-WmiObject Win32_DiskDrive -ComputerName $ComputerName
+            $videoControllerInfo = Get-WmiObject Win32_VideoController -ComputerName $ComputerName
+
+            if (!$systemInfo -or !$biosInfo -or !$memoryInfo -or !$diskDriveInfo -or !$videoControllerInfo) {
+                $ComputerResultTextBox.AppendText("No computer found with the name: $ComputerName")
+                return
+            }
+
+            $ComputerResultTextBox.AppendText("System Information for $ComputerName`r`n`r`n")
+            $ComputerResultTextBox.AppendText("Manufacturer: " + $systemInfo.Manufacturer + "`r`n")
+            $ComputerResultTextBox.AppendText("Model: " + $systemInfo.Model + "`r`n")
+            $ComputerResultTextBox.AppendText("BIOS Version: " + $biosInfo.SMBIOSBIOSVersion + "`r`n`r`n")
+            $ComputerResultTextBox.AppendText("Memory Information:`r`n")
+            $memoryInfo | ForEach-Object {
+                $ComputerResultTextBox.AppendText("Capacity: " + ($_ | Select-Object -ExpandProperty Capacity) + " bytes`r`n")
+            }
+            $ComputerResultTextBox.AppendText("`r`nDisk Drive Information:`r`n")
+            $diskDriveInfo | ForEach-Object {
+                $ComputerResultTextBox.AppendText("Model: " + $_.Model + "`r`n")
+            }
+            $ComputerResultTextBox.AppendText("`r`nVideo Controller Information:`r`n")
+            $videoControllerInfo | ForEach-Object {
+                $ComputerResultTextBox.AppendText("Name: " + $_.Name + "`r`n")
+            }
+        }
+        catch {
+            $ComputerResultTextBox.AppendText("Error: $_.Exception.Message")
+        }
+    } else {
+        $ComputerResultTextBox.AppendText("Please enter a computer name.")
+    }
+})
+
+# Create multi-line text box for displaying the computer search result
+$ComputerResultTextBox = New-Object System.Windows.Forms.TextBox
+$ComputerResultTextBox.Multiline = $true
+$ComputerResultTextBox.Location = New-Object System.Drawing.Point(10, 40)
+$ComputerResultTextBox.Size = New-Object System.Drawing.Size(480, 230)
+$ComputerResultTextBox.ScrollBars = "Vertical"
+$ComputerResultTextBox.ReadOnly = $true
+
+# Add controls to the Computers tab
+$ComputersTab.Controls.Add($ComputerLabel)
+$ComputersTab.Controls.Add($ComputerTextBox)
+$ComputersTab.Controls.Add($ComputerSearchButton)
+$ComputersTab.Controls.Add($ComputerResultTextBox)
+
+# Add the Computers tab to the tab control
+$TabControl.TabPages.Add($ComputersTab)
+
+
 # Show the form
 $Form.ShowDialog()
