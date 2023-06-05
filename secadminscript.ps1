@@ -2,7 +2,7 @@ Add-Type -AssemblyName System.Windows.Forms
 
 # Create the main form
 $Form = New-Object System.Windows.Forms.Form
-$Form.Text = "PowerShell GUI"
+$Form.Text = "AD Tool"
 $Form.Size = New-Object System.Drawing.Size(500, 400)
 
 # Create tab control
