@@ -56,7 +56,7 @@ $TabControl.TabPages.Add($LinksTab)
 
 # Create "AD" tab
 $ADTab = New-Object System.Windows.Forms.TabPage
-$ADTab.Text = "AD"
+$ADTab.Text = "Users"
 
 # Create labels for search boxes
 $KIDLabel = New-Object System.Windows.Forms.Label
