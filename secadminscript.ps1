@@ -54,85 +54,163 @@ $LinksTab.Controls.Add($LinksTable)
 $TabControl.TabPages.Add($LinksTab)
 
 
-# Create "AD" tab
-$ADTab = New-Object System.Windows.Forms.TabPage
-$ADTab.Text = "Users"
+# Create "Search" tab
+$SearchTab = New-Object System.Windows.Forms.TabPage
+$SearchTab.Text = "Search"
 
-# Create labels for search boxes
-$KIDLabel = New-Object System.Windows.Forms.Label
-$KIDLabel.Text = "KID:"
-$KIDLabel.Location = New-Object System.Drawing.Point(10, 10)
-$KIDLabel.AutoSize = $true
+# Create label for search type
+$SearchTypeLabel = New-Object System.Windows.Forms.Label
+$SearchTypeLabel.Text = "Search Type:"
+$SearchTypeLabel.Location = New-Object System.Drawing.Point(10, 10)
+$SearchTypeLabel.AutoSize = $true
 
-$ADGroupLabel = New-Object System.Windows.Forms.Label
-$ADGroupLabel.Text = "AD Group:"
-$ADGroupLabel.Location = New-Object System.Drawing.Point(10, 40)
-$ADGroupLabel.AutoSize = $true
+# Create radio button for searching users
+$SearchUsersRadioButton = New-Object System.Windows.Forms.RadioButton
+$SearchUsersRadioButton.Text = "Search Users"
+$SearchUsersRadioButton.Location = New-Object System.Drawing.Point(80, 10)
+$SearchUsersRadioButton.Checked = $true
 
-# Create text boxes for search inputs
-$KIDTextBox = New-Object System.Windows.Forms.TextBox
-$KIDTextBox.Location = New-Object System.Drawing.Point(80, 10)
-$KIDTextBox.Size = New-Object System.Drawing.Size(200, 20)
+# Create radio button for searching groups
+$SearchGroupsRadioButton = New-Object System.Windows.Forms.RadioButton
+$SearchGroupsRadioButton.Text = "Search Groups"
+$SearchGroupsRadioButton.Location = New-Object System.Drawing.Point(180, 10)
 
-$ADGroupTextBox = New-Object System.Windows.Forms.TextBox
-$ADGroupTextBox.Location = New-Object System.Drawing.Point(80, 40)
-$ADGroupTextBox.Size = New-Object System.Drawing.Size(200, 20)
+# Create label for search keyword
+$SearchKeywordLabel = New-Object System.Windows.Forms.Label
+$SearchKeywordLabel.Text = "Keyword:"
+$SearchKeywordLabel.Location = New-Object System.Drawing.Point(10, 40)
+$SearchKeywordLabel.AutoSize = $true
+
+# Create text box for search keyword input
+$SearchKeywordTextBox = New-Object System.Windows.Forms.TextBox
+$SearchKeywordTextBox.Location = New-Object System.Drawing.Point(80, 40)
+$SearchKeywordTextBox.Size = New-Object System.Drawing.Size(200, 20)
 
 # Create button for executing the search
 $SearchButton = New-Object System.Windows.Forms.Button
 $SearchButton.Text = "Search"
 $SearchButton.Location = New-Object System.Drawing.Point(300, 35)
 $SearchButton.Add_Click({
-    $KID = $KIDTextBox.Text
-    $ADGroup = $ADGroupTextBox.Text
+    $keyword = $SearchKeywordTextBox.Text
+    $searchType = if ($SearchUsersRadioButton.Checked) { "Users" } else { "Groups" }
     
-    # Perform wildcard search if AD Group is empty
-    if ([string]::IsNullOrEmpty($ADGroup)) {
-        $ADGroup = "*"
+    if ([string]::IsNullOrEmpty($keyword)) {
+        $SearchResultTextBox.Clear()
+        $SearchResultTextBox.AppendText("Please enter a $searchType keyword.")
+        return
     }
     
-    $user = Get-ADUser -Identity $KID -Properties MemberOf
-    if ($user) {
-        $memberOf = $user.MemberOf |
-            Get-ADGroup |
-            Where-Object { $_.Name -like "*$ADGroup*" } |
-            Select-Object -ExpandProperty Name |
-            Sort-Object
-
-        # Clear the text box before displaying the result
-        $ResultTextBox.Clear()
-
-        # Append each search result to a new line in the text box
-        if ($memberOf) {
-            $ResultTextBox.AppendText($memberOf -join "`r`n")
+    $SearchResultTextBox.Clear()
+    
+    if ($SearchUsersRadioButton.Checked) {
+        $userFilter = "SamAccountName -eq '$keyword'"
+        $users = Get-ADUser -Filter $userFilter -Properties MemberOf
+        
+        if ([string]::IsNullOrEmpty($users)) {
+            $SearchResultTextBox.AppendText("No users found.")
         } else {
-            $ResultTextBox.AppendText("No results found.")
+            foreach ($user in $users | Sort-Object -Property SamAccountName) {
+                $groups = $user.MemberOf | ForEach-Object { Get-ADGroup -Identity $_ }
+                
+                if ($groups) {
+                    $SearchResultTextBox.AppendText("User: $($user.SamAccountName)`r`n")
+                    $SearchResultTextBox.AppendText("Group Memberships:`r`n")
+                    foreach ($group in $groups | Sort-Object -Property Name) {
+                        $SearchResultTextBox.AppendText("$($group.Name)`r`n")
+                    }
+                    $SearchResultTextBox.AppendText("`r`n")
+                } else {
+                    $SearchResultTextBox.AppendText("User: $($user.SamAccountName)`r`nNo group memberships found.`r`n`r`n")
+                }
+            }
         }
     } else {
-        $ResultTextBox.AppendText("User not found.")
+        $groups = Get-ADGroup -Filter "Name -like '*$keyword*'"
+        
+        if ([string]::IsNullOrEmpty($groups)) {
+            $SearchResultTextBox.AppendText("No groups found.")
+        } else {
+            foreach ($group in $groups | Sort-Object -Property Name) {
+                $members = Get-ADGroupMember -Identity $group -Recursive | Where-Object { $_.objectClass -eq 'user' }
+                
+                if ($members) {
+                    $SearchResultTextBox.AppendText("Group: $($group.Name)`r`n")
+                    $SearchResultTextBox.AppendText("Members:`r`n")
+                    foreach ($member in $members | Sort-Object -Property SamAccountName) {
+                        $SearchResultTextBox.AppendText("$($member.SamAccountName)`r`n")
+                    }
+                    $SearchResultTextBox.AppendText("`r`n")
+                } else {
+                    $SearchResultTextBox.AppendText("Group: $($group.Name)`r`nNo members found.`r`n`r`n")
+                }
+            }
+        }
     }
 })
 
-# Create multi-line text box for displaying the search result
-$ResultTextBox = New-Object System.Windows.Forms.TextBox
-$ResultTextBox.Multiline = $true
-$ResultTextBox.Location = New-Object System.Drawing.Point(10, 70)
-$ResultTextBox.Size = New-Object System.Drawing.Size(480, 200)
-$ResultTextBox.ScrollBars = "Vertical"
+# Create text box for displaying search results
+$SearchResultTextBox = New-Object System.Windows.Forms.TextBox
+$SearchResultTextBox.Location = New-Object System.Drawing.Point(10, 70)
+$SearchResultTextBox.Size = New-Object System.Drawing.Size(480, 180)
+$SearchResultTextBox.Multiline = $true
+$SearchResultTextBox.ScrollBars = "Vertical"
+$SearchResultTextBox.ReadOnly = $true
 
-# Add controls to the AD tab
-$ADTab.Controls.Add($KIDLabel)
-$ADTab.Controls.Add($KIDTextBox)
-$ADTab.Controls.Add($ADGroupLabel)
-$ADTab.Controls.Add($ADGroupTextBox)
-$ADTab.Controls.Add($SearchButton)
-$ADTab.Controls.Add($ResultTextBox)
+# Add controls to the Search tab
+$SearchTab.Controls.Add($SearchTypeLabel)
+$SearchTab.Controls.Add($SearchUsersRadioButton)
+$SearchTab.Controls.Add($SearchGroupsRadioButton)
+$SearchTab.Controls.Add($SearchKeywordLabel)
+$SearchTab.Controls.Add($SearchKeywordTextBox)
+$SearchTab.Controls.Add($SearchButton)
+$SearchTab.Controls.Add($SearchResultTextBox)
 
-# Add the AD tab to the tab control
-$TabControl.TabPages.Add($ADTab)
+# Create the tab for exporting search results to CSV
+$ExportTab = New-Object System.Windows.Forms.TabPage
+$ExportTab.Text = "Export"
+
+# Create label for export type
+$ExportTypeLabel = New-Object System.Windows.Forms.Label
+$ExportTypeLabel.Text = "Export Type:"
+$ExportTypeLabel.Location = New-Object System.Drawing.Point(10, 10)
+$ExportTypeLabel.AutoSize = $true
+
+
+# Create button for exporting search results to CSV
+$ExportButton = New-Object System.Windows.Forms.Button
+$ExportButton.Text = "Export"
+$ExportButton.Location = New-Object System.Drawing.Point(300, 35)
+$ExportButton.Add_Click({
+    $saveFileDialog = New-Object System.Windows.Forms.SaveFileDialog
+    $saveFileDialog.Filter = "CSV (*.csv)|*.csv"
+    $saveFileDialog.Title = "Export Search Results"
+    
+    if ($saveFileDialog.ShowDialog() -eq "OK") {
+        $filePath = $saveFileDialog.FileName
+        
+        if ([string]::IsNullOrEmpty($SearchResultTextBox.Text)) {
+            [System.Windows.Forms.MessageBox]::Show("No results to export.", "Export Search Results", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            return
+        }
+        
+        $exportData = $SearchResultTextBox.Lines[2..($SearchResultTextBox.Lines.Count - 1)] | ForEach-Object { [PSCustomObject]@{ name = $_ } }
+        $exportData | Export-Csv -Path $filePath -NoTypeInformation -Encoding UTF8
+        
+        [System.Windows.Forms.MessageBox]::Show("Search results exported successfully.", "Export Search Results", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+    }
+})
+
+# Add controls to the Export tab
+$ExportTab.Controls.Add($ExportTypeLabel)
+$ExportTab.Controls.Add($ExportButton)
+
+# Add tabs to the tab control
+$TabControl.Controls.Add($SearchTab)
+$TabControl.Controls.Add($ExportTab)
 
 # Add the tab control to the form
 $Form.Controls.Add($TabControl)
+
 
 
 # Create "Computers" tab
@@ -215,6 +293,8 @@ $ComputersTab.Controls.Add($ComputerResultTextBox)
 # Add the Computers tab to the tab control
 $TabControl.TabPages.Add($ComputersTab)
 
+# Add the tab control to the form
+$Form.Controls.Add($TabControl)
 
 # Show the form
 $Form.ShowDialog()
