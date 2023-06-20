@@ -3,11 +3,11 @@ Add-Type -AssemblyName System.Windows.Forms
 # Create the main form
 $Form = New-Object System.Windows.Forms.Form
 $Form.Text = "AD Tool"
-$Form.Size = New-Object System.Drawing.Size(500, 400)
+$Form.Size = New-Object System.Drawing.Size(700, 500)
 
 # Create tab control
 $TabControl = New-Object System.Windows.Forms.TabControl
-$TabControl.Size = New-Object System.Drawing.Size(480, 340)
+$TabControl.Size = New-Object System.Drawing.Size(680, 440)
 $TabControl.Location = New-Object System.Drawing.Point(10, 10)
 
 # Create "Links" tab
@@ -16,8 +16,9 @@ $LinksTab.Text = "Links"
 
 # Create table layout panel for links
 $LinksTable = New-Object System.Windows.Forms.TableLayoutPanel
-$LinksTable.RowCount = 3
-$LinksTable.ColumnCount = 3
+$LinksTable.RowCount = [Math]::Ceiling($Links.Count / 2)
+$LinksTable.ColumnCount = 2
+$LinksTable.AutoSize = $true
 
 # Add links to the table
 $Links = @(
@@ -29,23 +30,28 @@ $Links = @(
     "Citrix Director", "https://ctxcdcpdirxd001.nyumc.org/Director",
     "VPN Logout", "https://vpn-termination.nyumc.org",
     "Peoplesoft HCM", "https://peoplesofthcm.nyumc.org/psc/hrprod/EMPLOYEE/HRMS/c/NUI_FRAMEWORK.PT_LANDINGPAGE.GBL?NPSLT=Y"
-)
+    "CyberArk", "https://pvwa.nyumc.org/PasswordVault/v10/logon/radius"
+    )
 
 for ($i = 0; $i -lt $Links.Count; $i += 2) {
-    $linkLabel = New-Object System.Windows.Forms.LinkLabel
-    $linkLabel.Text = $Links[$i]
-    $linkLabel.Dock = 'Fill'
-    $linkLabel.LinkBehavior = "AlwaysUnderline"
-    $linkLabel.LinkColor = [System.Drawing.Color]::Blue
-    $linkLabel.Font = New-Object System.Drawing.Font($linkLabel.Font, [System.Drawing.FontStyle]::Underline)
-    $linkLabel.Tag = $Links[$i + 1]
-    $linkLabel.Add_Click({
+    $button = New-Object System.Windows.Forms.Button
+    $button.Text = $Links[$i]
+    $button.FlatStyle = 'Flat'
+    $button.BackColor = [System.Drawing.Color]::FromArgb(240, 240, 240)
+    $button.Font = New-Object System.Drawing.Font("Arial", 10, [System.Drawing.FontStyle]::Bold)
+    $button.Tag = $Links[$i + 1]
+    $button.Add_Click({
         $url = $this.Tag.ToString()
         [System.Diagnostics.Process]::Start($url)
     })
 
-    $LinksTable.Controls.Add($linkLabel, $i / 2, 0)
+    $button.Width = 200  # Set the button width to 200 pixels for longer buttons
+
+    $LinksTable.Controls.Add($button, $i % 2, $i / 2)
 }
+
+# Adjust the table layout panel size to fit the longer buttons
+$LinksTable.Size = New-Object System.Drawing.Size($LinksTable.ColumnCount * ($button.Width + 10), $LinksTable.RowCount * ($button.Height + 10))
 
 # Add the table to the Links tab
 $LinksTab.Controls.Add($LinksTable)
@@ -53,6 +59,8 @@ $LinksTab.Controls.Add($LinksTable)
 # Add the Links tab to the tab control
 $TabControl.TabPages.Add($LinksTab)
 
+# Add the tab control to the form
+$Form.Controls.Add($TabControl)
 
 # Create "Search" tab
 $SearchTab = New-Object System.Windows.Forms.TabPage
@@ -75,6 +83,11 @@ $SearchGroupsRadioButton = New-Object System.Windows.Forms.RadioButton
 $SearchGroupsRadioButton.Text = "Search Groups"
 $SearchGroupsRadioButton.Location = New-Object System.Drawing.Point(180, 10)
 
+# Create radio button for searching groups with wildcards
+$SearchWildcardGroupsRadioButton = New-Object System.Windows.Forms.RadioButton
+$SearchWildcardGroupsRadioButton.Text = "Search Groups (Wildcard)"
+$SearchWildcardGroupsRadioButton.Location = New-Object System.Drawing.Point(280, 10)
+
 # Create label for search keyword
 $SearchKeywordLabel = New-Object System.Windows.Forms.Label
 $SearchKeywordLabel.Text = "Keyword:"
@@ -92,7 +105,7 @@ $SearchButton.Text = "Search"
 $SearchButton.Location = New-Object System.Drawing.Point(300, 35)
 $SearchButton.Add_Click({
     $keyword = $SearchKeywordTextBox.Text
-    $searchType = if ($SearchUsersRadioButton.Checked) { "Users" } else { "Groups" }
+    $searchType = if ($SearchUsersRadioButton.Checked) { "Users" } elseif ($SearchWildcardGroupsRadioButton.Checked) { "Groups (Wildcard)" } else { "Groups" }
     
     if ([string]::IsNullOrEmpty($keyword)) {
         $SearchResultTextBox.Clear()
@@ -124,8 +137,18 @@ $SearchButton.Add_Click({
                 }
             }
         }
-    } else {
+    } elseif ($SearchWildcardGroupsRadioButton.Checked) {
         $groups = Get-ADGroup -Filter "Name -like '*$keyword*'"
+        
+        if ([string]::IsNullOrEmpty($groups)) {
+            $SearchResultTextBox.AppendText("No wildcard groups found.")
+        } else {
+            foreach ($group in $groups | Sort-Object -Property Name) {
+            $SearchResultTextBox.AppendText("Group: $($group.Name)`r`n")
+            }
+        }
+    } else {
+        $groups = Get-ADGroup -Filter "Name -eq '$keyword'"
         
         if ([string]::IsNullOrEmpty($groups)) {
             $SearchResultTextBox.AppendText("No groups found.")
@@ -160,6 +183,7 @@ $SearchResultTextBox.ReadOnly = $true
 $SearchTab.Controls.Add($SearchTypeLabel)
 $SearchTab.Controls.Add($SearchUsersRadioButton)
 $SearchTab.Controls.Add($SearchGroupsRadioButton)
+$SearchTab.Controls.Add($SearchWildcardGroupsRadioButton)
 $SearchTab.Controls.Add($SearchKeywordLabel)
 $SearchTab.Controls.Add($SearchKeywordTextBox)
 $SearchTab.Controls.Add($SearchButton)
