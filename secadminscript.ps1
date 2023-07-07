@@ -2,7 +2,7 @@ Add-Type -AssemblyName System.Windows.Forms
 
 # Create the main form
 $Form = New-Object System.Windows.Forms.Form
-$Form.Text = "AD Tool"
+$Form.Text = "SecAdmin Tool"
 $Form.Size = New-Object System.Drawing.Size(700, 500)
 
 # Create tab control
@@ -23,14 +23,17 @@ $LinksTable.AutoSize = $true
 # Add links to the table
 $Links = @(
     "AD Manager", "https://adm.nyumc.org:8443/",
-    "Routing Chart", "https://servicecatalog.nyumc.org/DesksideRouting/Pages/RoutingChart.aspx",
-    "Sailpoint", "https://identity.nyumc.org",
     "AirWatch", "https://aw.nyumc.org/AirWatch",
-    "Duo Security", "https://admin-a5409281.duosecurity.com",
+    "AMS Tools", "https://amstools.nyumc.org/",
     "Citrix Director", "https://ctxcdcpdirxd001.nyumc.org/Director",
-    "VPN Logout", "https://vpn-termination.nyumc.org",
-    "Peoplesoft HCM", "https://peoplesofthcm.nyumc.org/psc/hrprod/EMPLOYEE/HRMS/c/NUI_FRAMEWORK.PT_LANDINGPAGE.GBL?NPSLT=Y"
-    "CyberArk", "https://pvwa.nyumc.org/PasswordVault/v10/logon/radius"
+    "CyberArk", "https://pvwa.nyumc.org/PasswordVault/v10/logon/radius",
+    "Duo Security", "https://admin-a5409281.duosecurity.com",
+    "ISM", "https://nyu-amc.ivanticloud.com",
+    "Peoplesoft HCM", "https://peoplesofthcm.nyumc.org/psc/hrprod/EMPLOYEE/HRMS/c/NUI_FRAMEWORK.PT_LANDINGPAGE.GBL?NPSLT=Y",
+    "Routing Chart", "https://servicecatalog.nyumc.org/DesksideRouting/Pages/RoutingChart.aspx",
+    "Sailpoint", "https://identity.nyumc.org",    
+    "VPN Termination", "https://vpn-termination.nyumc.org"    
+    
     )
 
 for ($i = 0; $i -lt $Links.Count; $i += 2) {
@@ -85,7 +88,7 @@ $SearchGroupsRadioButton.Location = New-Object System.Drawing.Point(180, 10)
 
 # Create radio button for searching groups with wildcards
 $SearchWildcardGroupsRadioButton = New-Object System.Windows.Forms.RadioButton
-$SearchWildcardGroupsRadioButton.Text = "Search Groups (Wildcard)"
+$SearchWildcardGroupsRadioButton.Text = "(Wildcard)"
 $SearchWildcardGroupsRadioButton.Location = New-Object System.Drawing.Point(280, 10)
 
 # Create label for search keyword
